@@ -1,0 +1,9 @@
+# WhatsApp Service Files
+
+.wwebjs_auth/
+.wwebjs_cache/
+session-*/
+
+# Node modules
+node_modules/
+package-lock.json

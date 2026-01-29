@@ -1,0 +1,151 @@
+{
+  "identity": {
+    "name": "E1: The Anti-AI Designer",
+    "mission": "Create a luxury, high-performance POS system that feels like a high-end cockpit, not a spreadsheet.",
+    "principles": [
+      "Fusion over Imitation: Mix 'High-End Hotel Concierge' aesthetics with 'Military Grade Cockpit' functionality.",
+      "Emotion First: Every interaction should feel expensive and precise.",
+      "Content is King: Data must be legible at a glance (POS speed).",
+      "Zoom In: Focus on the numbers that matter (Total Sales, Active Members).",
+      "Negative Space: Use it to separate high-density clusters."
+    ]
+  },
+  "typography": {
+    "fonts": {
+      "primary": "Manrope",
+      "secondary": "Playfair Display",
+      "mono": "JetBrains Mono"
+    },
+    "usage": {
+      "headings": "font-secondary font-bold tracking-tight",
+      "body": "font-primary tracking-normal",
+      "data_tables": "font-mono text-sm tracking-tight",
+      "pos_numbers": "font-mono font-bold tracking-tighter"
+    },
+    "scale": {
+      "h1": "text-4xl md:text-5xl lg:text-6xl",
+      "h2": "text-3xl md:text-4xl",
+      "h3": "text-2xl md:text-3xl",
+      "body": "text-base leading-relaxed",
+      "caption": "text-xs text-muted-foreground uppercase tracking-widest"
+    }
+  },
+  "colors": {
+    "palette": {
+      "background": {
+        "default": "#09090B",
+        "card": "#121214",
+        "overlay": "#000000/80"
+      },
+      "foreground": {
+        "default": "#FAFAFA",
+        "muted": "#A1A1AA",
+        "inverse": "#09090B"
+      },
+      "primary": {
+        "default": "#D4AF37",
+        "hover": "#B5952F",
+        "foreground": "#000000"
+      },
+      "secondary": {
+        "default": "#27272A",
+        "foreground": "#FAFAFA"
+      },
+      "accent": {
+        "default": "#D4AF37",
+        "subtle": "#D4AF37/20"
+      },
+      "border": {
+        "default": "#27272A",
+        "active": "#D4AF37/50"
+      },
+      "status": {
+        "success": "#10B981",
+        "warning": "#F59E0B",
+        "error": "#EF4444",
+        "info": "#3B82F6"
+      }
+    },
+    "theme_strategy": "dark_only",
+    "gradients": {
+      "gold_rush": "bg-gradient-to-r from-[#D4AF37] to-[#F59E0B]",
+      "obsidian_sheen": "bg-gradient-to-b from-[#18181B] to-[#09090B]"
+    }
+  },
+  "visual_enhancers": {
+    "borders": "border border-white/10 hover:border-[#D4AF37]/50 transition-colors duration-300",
+    "shadows": "shadow-[0_8px_30px_rgb(0,0,0,0.12)]",
+    "glassmorphism": "backdrop-blur-xl bg-black/40 border-white/5",
+    "textures": "bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-5",
+    "radius": "rounded-sm"
+  },
+  "layout": {
+    "grid_system": {
+      "dashboard": "grid grid-cols-1 md:grid-cols-12 gap-6",
+      "pos_screen": "grid grid-cols-12 gap-4 h-screen overflow-hidden",
+      "card_grid": "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+    },
+    "spacing": {
+      "container_padding": "p-6 md:p-8 lg:p-12",
+      "section_gap": "gap-8",
+      "component_gap": "gap-4"
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-[#D4AF37] text-black hover:bg-[#B5952F] font-bold uppercase tracking-wider rounded-sm shadow-[0_0_15px_rgba(212,175,55,0.3)]",
+      "secondary": "bg-zinc-800 text-white hover:bg-zinc-700 border border-zinc-700 rounded-sm",
+      "ghost": "hover:bg-white/5 text-zinc-400 hover:text-white"
+    },
+    "cards": {
+      "default": "bg-[#121214] border border-zinc-800 rounded-sm p-6 hover:border-[#D4AF37]/30 transition-all duration-300",
+      "highlight": "bg-gradient-to-br from-zinc-900 to-black border border-[#D4AF37]/40 rounded-sm p-6 relative overflow-hidden"
+    },
+    "inputs": {
+      "default": "bg-zinc-900/50 border-zinc-800 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] rounded-sm text-white placeholder:text-zinc-600"
+    }
+  },
+  "image_urls": {
+    "hero_backgrounds": [
+      "https://images.unsplash.com/photo-1761312834150-4beefff097a7?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njl8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBjYXIlMjB3YXNoJTIwZGV0YWlsaW5nJTIwYmxhY2slMjBiYWNrZ3JvdW5kfGVufDB8fHx8MTc2ODk2MTU1MHww&ixlib=rb-4.1.0&q=85",
+      "https://images.unsplash.com/photo-1575888786917-b44d13889747?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njl8MHwxfHNlYXJjaHwyfHxsdXh1cnklMjBjYXIlMjB3YXNoJTIwZGV0YWlsaW5nJTIwYmxhY2slMjBiYWNrZ3JvdW5kfGVufDB8fHx8MTc2ODk2MTU1MHww&ixlib=rb-4.1.0&q=85"
+    ],
+    "service_icons": [
+      "https://images.unsplash.com/photo-1705863589947-e4c35d937418?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njl8MHwxfHNlYXJjaHwzfHxsdXh1cnklMjBjYXIlMjB3YXNoJTIwZGV0YWlsaW5nJTIwYmxhY2slMjBiYWNrZ3JvdW5kfGVufDB8fHx8MTc2ODk2MTU1MHww&ixlib=rb-4.1.0&q=85",
+      "https://images.unsplash.com/photo-1631828472874-4712b7987c51?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njl8MHwxfHNlYXJjaHw0fHxsdXh1cnklMjBjYXIlMjB3YXNoJTIwZGV0YWlsaW5nJTIwYmxhY2slMjBiYWNrZ3JvdW5kfGVufDB8fHx8MTc2ODk2MTU1MHww&ixlib=rb-4.1.0&q=85"
+    ],
+    "staff_avatars": [
+      "https://images.unsplash.com/photo-1708745427274-d5de5122fd57?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzd8MHwxfHNlYXJjaHwxfHxtZWNoYW5pYyUyMHdvcmtpbmclMjBvbiUyMGNhciUyMGRldGFpbHxlbnwwfHx8fDE3Njg5NjE1NTN8MA&ixlib=rb-4.1.0&q=85",
+      "https://images.unsplash.com/photo-1568437234382-a8e1e70daa38?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzd8MHwxfHNlYXJjaHwyfHxtZWNoYW5pYyUyMHdvcmtpbmclMjBvbiUyMGNhciUyMGRldGFpbHxlbnwwfHx8fDE3Njg5NjE1NTN8MA&ixlib=rb-4.1.0&q=85"
+    ]
+  },
+  "instructions_to_main_agent": {
+    "general": "You are building a Luxury POS System. Think 'Rolex Store' meets 'F1 Pit Stop'. Speed is key, but elegance is non-negotiable.",
+    "pos_screen": "The POS screen must be dense but clear. Use the 'Bento Grid' layout. Left side: Service Selection (Grid of cards). Right side: Cart/Transaction details (Vertical list). Bottom: Payment Methods (Large touch targets).",
+    "dashboard": "Use 'The Tetris Grid' for the dashboard. Hero card for Total Sales (Gold text). Smaller cards for Active Members and Low Stock.",
+    "tables": "For Inventory and Reports, use Shadcn Tables but customize them. Remove vertical borders. Add hover effects on rows (`hover:bg-white/5`). Header text should be uppercase and muted.",
+    "forms": "Input fields should feel premium. No default browser outlines. Use `ring-1 ring-zinc-800 focus:ring-[#D4AF37]`.",
+    "charts": "Use Recharts. Stroke color for main data: `#D4AF37`. Grid lines: `#27272A` (very subtle). Tooltip background: `#18181B`.",
+    "accessibility": "Ensure the Gold text on Black background meets contrast ratios. Use lighter shades of gold for text if needed."
+  },
+  "universal_guidelines": [
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients",
+    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy",
+    "Use glass-morphism effects with backdrop filters (12-24px blur)",
+    "You MUST NOT apply universal transition. Eg: `transition: all`. This results in breaking transforms. Always add transitions for specific interactive elements like button, input excluding transforms",
+    "You MUST NOT center align the app container, ie do not add `.App { text-align: center; }` in the css file. This disrupts the human natural reading flow of text",
+    "Always use modern button styles like pill-shaped, or sharp button with interaction animations & color relevant to the app style",
+    "NEVER: use AI assistant Emoji characters like 🤖🧠💭💡🔮🎯📚🎭🎬🎪🎉🎊🎁🎀🎂🍰🎈🎨🎰💰💵💳🏦💎🪙💸🤑📊📈📉💹🔢🏆🥇 etc for icons.",
+    "Every interaction needs micro-animations - hover states, transitions, parallax effects, and entrance animations. Static = dead.",
+    "Use 2-3x more spacing than feels comfortable. Cramped designs look cheap.",
+    "Subtle grain textures, noise overlays, custom cursors, selection states, and loading animations: separates good from extraordinary.",
+    "Main agent relies on these image URLs. Missing categories (especially sponsor logos) = main agent will use placeholder text which is FORBIDDEN",
+    "Prioritize using pre-existing components from src/components/ui when applicable",
+    "Create new components that match the style and conventions of existing components when needed",
+    "Examine existing components to understand the project's component patterns before creating new ones",
+    "Components MUST use named exports (export const ComponentName = ...)",
+    "Pages MUST use default exports (export default function PageName() {...})",
+    "Use `sonner` for toasts. Sonner component are located in `/app/src/components/ui/sonner.tsx`"
+  ]
+}

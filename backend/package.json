@@ -1,0 +1,27 @@
+{
+    "name": "otopia-whatsapp-service",
+    "version": "1.0.0",
+    "description": "WhatsApp Web.js integration for OTOPIA Car Wash POS",
+    "main": "whatsapp_service.js",
+    "scripts": {
+        "start": "node whatsapp_service.js",
+        "dev": "nodemon whatsapp_service.js"
+    },
+    "keywords": [
+        "whatsapp",
+        "notification",
+        "pos"
+    ],
+    "author": "OTOPIA",
+    "license": "MIT",
+    "dependencies": {
+        "whatsapp-web.js": "^1.23.0",
+        "qrcode-terminal": "^0.12.0",
+        "express": "^4.18.2",
+        "dotenv": "^16.3.1",
+        "cors": "^2.8.5"
+    },
+    "devDependencies": {
+        "nodemon": "^3.0.1"
+    }
+}
