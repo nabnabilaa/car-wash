@@ -373,7 +373,7 @@ export const ProductsPage = () => {
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                           onError={(e) => {
                             e.target.onerror = null;
-                            e.target.src = 'https://via.placeholder.com/300x200.png?text=No+Image';
+                            e.target.src = 'https://placehold.co/300x200.png?text=No+Image';
                           }}
                         />
                         {/* Stock Badge on Image */}

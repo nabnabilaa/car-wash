@@ -67,7 +67,8 @@ export const ReportsPage = () => {
 
 
     } catch (error) {
-      toast.error('Gagal memuat data reports');
+      console.error(error);
+      toast.error(error.response?.data?.detail || 'Gagal memuat data reports');
     } finally {
       setLoading(false);
     }

@@ -46,7 +46,7 @@ export const ExpensesPage = () => {
             const response = await api.get('/expenses');
             setExpenses(response.data);
         } catch (error) {
-            toast.error('Gagal memuat data pengeluaran');
+            toast.error(error.response?.data?.detail || 'Gagal memuat data pengeluaran');
         } finally {
             setLoading(false);
         }

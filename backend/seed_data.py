@@ -27,6 +27,12 @@ async def seed_data():
     print("🌱 Starting comprehensive data seeding...")
     print("=" * 60)
     
+    # DEBUG: Verify Connection
+    masked_url = mongo_url.replace(mongo_url.split('@')[0], '***') if '@' in mongo_url else mongo_url
+    print(f"🔌 Connecting to: {masked_url}")
+    print(f"📂 Database Name: {db_name}")
+    print("=" * 60)
+    
     # ========================================
     # 1. OUTLETS
     # ========================================
@@ -863,7 +869,168 @@ async def seed_data():
         print(f"✅ {len(expenses)} additional expenses created")
     else:
         print("ℹ️  Additional expenses already exist")
+
+    # ========================================
+    # 10. HISTORICAL DATA GENERATION (30 DAYS)
+    # ========================================
+    print("\n📅 Seeding 30 Days of Historical Data...")
     
+    # 10.1 Reload helper lists for random selection
+    all_services = await db.services.find({}, {"id": 1, "name": 1, "price": 1}).to_list(None)
+    all_products = await db.products.find({}, {"id": 1, "name": 1, "price": 1}).to_list(None)
+    all_customers = await db.customers.find({}, {"id": 1, "name": 1, "phone": 1}).to_list(None)
+    
+    # Check if we already have historical data (if total shifts > 5, assume seeded)
+    existing_shifts_count = await db.shifts.count_documents({})
+    
+    # Check if we already have historical data (if total shifts > 5, assume seeded)
+    if existing_shifts_count < 5:
+        history_transactions = []
+        history_shifts = []
+        history_expenses = []
+        
+        # Loop last 30 days
+        for i in range(1, 31):
+            day_offset = datetime.now(timezone.utc) - timedelta(days=i)
+            day_str = day_offset.strftime("%Y-%m-%d")
+            
+            # Skip if it clashes with our specific "yesterday" manual seed
+            if i == 1: 
+                continue
+                
+            # Randomize daily volume
+            num_tx = random.randint(5, 15)
+            daily_revenue = 0
+            daily_cash = 0
+            
+            # Create Shift for this day
+            shift_id = str(uuid.uuid4())
+            shift_start = day_offset.replace(hour=8, minute=0, second=0)
+            shift_end = day_offset.replace(hour=17, minute=0, second=0)
+            
+            # Transactions
+            for _ in range(num_tx):
+                # Randomize items
+                items = []
+                subtotal = 0
+                
+                # 1-2 Services
+                for _ in range(random.randint(1, 2)):
+                    svc = random.choice(all_services)
+                    items.append({
+                        "type": "service",
+                        "service_id": svc['id'],
+                        "service_name": svc['name'],
+                        "quantity": 1,
+                        "price": svc['price'],
+                        "subtotal": svc['price']
+                    })
+                    subtotal += svc['price']
+                
+                # 0-2 Products
+                if all_products and random.random() > 0.7:
+                    for _ in range(random.randint(1, 2)):
+                        prod = random.choice(all_products)
+                        items.append({
+                            "type": "product",
+                            "product_id": prod['id'],
+                            "product_name": prod['name'],
+                            "quantity": 1,
+                            "price": prod['price'],
+                            "subtotal": prod['price']
+                        })
+                        subtotal += prod['price']
+                
+                total = subtotal # simple logic, no tax/discount complexity for history
+                
+                # Payment method
+                method = random.choice(['cash', 'cash', 'cash', 'qr', 'card']) # heavy on cash
+                
+                # Customer (optional)
+                cust = random.choice(all_customers) if random.random() > 0.3 else None
+                
+                tx = {
+                    "id": str(uuid.uuid4()),
+                    "invoice_number": f"INV-{day_offset.strftime('%Y%m%d')}-{random.randint(1000, 9999)}",
+                    "kasir_id": kasir1_id,
+                    "kasir_name": "Budi Santoso",
+                    "shift_id": shift_id,
+                    "customer_id": cust['id'] if cust else None,
+                    "customer_name": cust['name'] if cust else "Walk-in Customer",
+                    "customer_phone": cust['phone'] if cust else None,
+                    "items": items,
+                    "subtotal": subtotal,
+                    "discount": 0,
+                    "tax": 0,
+                    "total": total,
+                    "payment_method": method,
+                    "amount_paid": total,
+                    "change": 0,
+                    "created_at": day_offset.replace(hour=random.randint(9, 16), minute=random.randint(0, 59)).isoformat()
+                }
+                history_transactions.append(tx)
+                
+                daily_revenue += total
+                if method == 'cash':
+                    daily_cash += total
+            
+            # Expenses (0-2 per day)
+            petty_cash_expense = 0
+            if random.random() > 0.5:
+                amt = random.choice([20000, 50000, 100000])
+                exp = {
+                    "id": str(uuid.uuid4()),
+                    "date": day_offset.replace(hour=13).isoformat(),
+                    "amount": amt,
+                    "category": "operational",
+                    "description": f"Expense harian {day_str}",
+                    "payment_method": "cash",
+                    "recorded_by": kasir1_id,
+                    "shift_id": shift_id,
+                    "created_at": day_offset.replace(hour=13, minute=5).isoformat()
+                }
+                history_expenses.append(exp)
+                petty_cash_expense += amt
+
+            # Shift Record
+            opening = 500000
+            system_expected = opening + daily_cash - petty_cash_expense
+            variance = random.choice([0, 0, 0, -5000, 5000]) # occasional variance
+            
+            shift = {
+                "id": shift_id,
+                "kasir_id": kasir1_id,
+                "kasir_name": "Budi Santoso",
+                "outlet_id": outlet_sudirman_id,
+                "opening_balance": opening,
+                "closing_balance": system_expected + variance,
+                "expected_balance": system_expected,
+                "variance": variance,
+                "total_cash_sales": daily_cash,
+                "petty_cash": petty_cash_expense,
+                "cash_drop": 0,
+                "start_time": shift_start.isoformat(),
+                "end_time": shift_end.isoformat(),
+                "status": "closed",
+                "notes": "Auto-generated history"
+            }
+            history_shifts.append(shift)
+            
+            if i % 5 == 0:
+                print(f"  ... Generated data for {day_str} ({num_tx} tx)")
+        
+        # Bulk Insert
+        if history_shifts:
+            await db.shifts.insert_many(history_shifts)
+        if history_transactions:
+            await db.transactions.insert_many(history_transactions)
+        if history_expenses:
+            await db.expenses.insert_many(history_expenses)
+            
+        print(f"✅ Created {len(history_shifts)} shifts, {len(history_transactions)} transactions, {len(history_expenses)} expenses")
+    else:
+        print("ℹ️  Historical data already exists (skipping)")
+
     print("\n" + "=" * 60)
     print("🎉 COMPREHENSIVE DATA SEEDING COMPLETED!")
     print("=" * 60)

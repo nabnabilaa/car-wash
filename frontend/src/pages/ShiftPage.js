@@ -113,11 +113,12 @@ export const ShiftPage = () => {
   useEffect(() => {
     fetchCurrentShift();
     fetchShifts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchCurrentShift = async () => {
     try {
-      const response = await api.get(`/shifts/current/${user.id}`);
+      const response = await api.get('/shifts/current');
       setCurrentShift(response.data);
     } catch (error) {
       console.error('Error fetching current shift:', error);

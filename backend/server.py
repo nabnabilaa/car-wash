@@ -13,15 +13,37 @@ from datetime import datetime, timezone, timedelta
 import bcrypt
 import jwt
 from enum import Enum
-from whatsapp_helper import whatsapp
+
+try:
+    from whatsapp_helper import whatsapp
+except Exception as e:
+    print(f"WARNING: WhatsApp helper could not be loaded: {e}")
+    class MockWhatsApp:
+        def send_receipt(self, *args, **kwargs): return {"success": False, "error": "WhatsApp service unavailable"}
+        def send_message(self, *args, **kwargs): return {"success": False, "error": "WhatsApp service unavailable"}
+    whatsapp = MockWhatsApp()
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
 # MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+# Use getenv to avoid KeyErrors during build/start if env vars are missing
+mongo_url = os.environ.get('MONGO_URL')
+db_name = os.environ.get('DB_NAME', 'carwash_db')
+
+if not mongo_url:
+    print("WARNING: MONGO_URL not found in environment variables! DB connection disabled.")
+    client = None
+    db = None
+else:
+    try:
+        client = AsyncIOMotorClient(mongo_url)
+        db = client[db_name]
+        print(f"Connected to MongoDB: {db_name}")
+    except Exception as e:
+        print(f"Failed to connect to MongoDB: {e}")
+        client = None
+        db = None
 
 # JWT Config
 JWT_SECRET = os.environ.get('JWT_SECRET', 'carwash-pos-secret-key-change-in-production')
@@ -35,11 +57,25 @@ app = FastAPI()
 # CORS Middleware - MUST be added before routes
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "*"],
+    allow_origins=[
+        "http://localhost:3000", 
+        "http://127.0.0.1:3000",
+        "https://frontend-car-wash.vercel.app",
+        "https://frontend-car-wash.vercel.app/"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Root route for health check
+@app.get("/")
+async def root():
+    return {
+        "status": "online",
+        "message": "Car Wash Backend is Running!",
+        "docs": "/docs"
+    }
 
 api_router = APIRouter(prefix="/api")
 
@@ -528,6 +564,8 @@ def create_token(user_id: str, role: str) -> str:
     return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database service unavailable")
     try:
         token = credentials.credentials
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
@@ -871,9 +909,10 @@ async def get_shift_summary(shift_id: str, current_user: User = Depends(get_curr
         "cash_drop_total": cash_drop
     }
 
-@api_router.get("/shifts/current/{kasir_id}")
-async def get_current_shift(kasir_id: str, current_user: User = Depends(get_current_user)):
-    shift = await db.shifts.find_one({"kasir_id": kasir_id, "status": "open"}, {"_id": 0})
+@api_router.get("/shifts/current")
+async def get_current_shift(current_user: User = Depends(get_current_user)):
+    # Use current_user.id instead of kasir_id argument
+    shift = await db.shifts.find_one({"kasir_id": current_user.id, "status": "open"}, {"_id": 0})
     if not shift:
         return None
     
@@ -1005,6 +1044,8 @@ async def create_membership(membership_data: MembershipCreate, current_user: Use
 
 @api_router.get("/memberships", response_model=List[Membership])
 async def get_memberships(current_user: User = Depends(get_current_user)):
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database service unavailable")
     memberships = await db.memberships.find({}, {"_id": 0}).to_list(1000)
     now = datetime.now(timezone.utc)
     
@@ -1598,6 +1639,8 @@ async def get_dashboard_stats(current_user: User = Depends(get_current_user)):
 @api_router.post("/public/check-membership")
 async def check_membership_public(phone: str):
     """Public endpoint untuk customer cek membership mereka"""
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database service unavailable")
     customer = await db.customers.find_one({"phone": phone}, {"_id": 0})
     if not customer:
         raise HTTPException(status_code=404, detail="Nomor telepon tidak ditemukan")
@@ -1640,12 +1683,16 @@ async def check_membership_public(phone: str):
 @api_router.get("/public/services")
 async def get_public_services():
     """Public endpoint untuk menampilkan services di landing page"""
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database service unavailable")
     services = await db.services.find({"is_active": True}, {"_id": 0}).to_list(1000)
     return services
 
 # Routes - Promotions
 @api_router.get("/promotions", response_model=List[Promotion])
 async def get_promotions(current_user: User = Depends(get_current_user)):
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database service unavailable")
     promotions = await db.promotions.find({}, {"_id": 0}).to_list(1000)
     # Convert dates
     for p in promotions:
@@ -1824,6 +1871,8 @@ async def check_expiring_memberships_notification(current_user: User = Depends(g
 # Expenses Endpoints
 @api_router.get("/expenses", response_model=List[Expense])
 async def get_expenses():
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database service unavailable")
     expenses = await db.expenses.find().sort("date", -1).to_list(1000)
     for expense in expenses:
         if isinstance(expense.get('date'), str):
@@ -1848,6 +1897,8 @@ async def delete_expense(expense_id: str, current_user: User = Depends(get_curre
 # Routes - Commission Payouts
 @api_router.get("/payouts", response_model=List[CommissionPayout])
 async def get_payouts():
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database service unavailable")
     payouts = await db.payouts.find().sort("date", -1).to_list(1000)
     for p in payouts:
         if isinstance(p.get('date'), str):
@@ -1897,6 +1948,11 @@ class LandingPageConfig(BaseModel):
 
 @api_router.get("/public/landing-config", response_model=LandingPageConfig)
 async def get_landing_config():
+    if db is None:
+        # Return default if DB is down, or raise 503?
+        # Better to return default so landing page works partially
+        return LandingPageConfig()
+    
     config = await db.landing_config.find_one({"id": "default"}, {"_id": 0})
     if not config:
         # Return default defaults if not found

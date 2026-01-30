@@ -56,7 +56,7 @@ export const PromotionsPage = () => {
             const response = await api.get('/promotions');
             setPromotions(response.data);
         } catch (error) {
-            toast.error('Gagal memuat data promosi');
+            toast.error(error.response?.data?.detail || 'Gagal memuat data promosi');
         } finally {
             setLoading(false);
         }
